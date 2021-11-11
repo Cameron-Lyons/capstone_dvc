@@ -24,6 +24,7 @@ def combine_files(census_file:str,airbnb_file:str)->gpd.GeoDataFrame:
     census_df = gpd.read_file(census_file)
     airbnb_df = gpd.read_file(airbnb_file)
     census_df  = census_df.to_crs('EPSG:4326')
+    airbnb_df = airbnb_df.to_crs('EPSG:4326')
     used_tl = gpd.sjoin(census_df,airbnb_df)
 
     return used_tl
@@ -180,4 +181,6 @@ if __name__ == '__main__':
     if VERBOSE:
         print('Generating final file...')
     r_df = generate_final(combined_df,df_2010,df_2020)
-    r_df.to_file(args.output_final_file)
+    if VERBOSE:
+        print('Outputting data, please be patient...')
+    r_df.to_csv(args.output_final_file)

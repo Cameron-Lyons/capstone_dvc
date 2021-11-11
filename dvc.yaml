@@ -1,0 +1,17 @@
+stages:
+  read_airbnb:
+    cmd: python scripts/read_airbnb.py outputs/airbnb.geojson -v
+    outs:
+    - outputs/airbnb.geojson
+  read_tigerline:
+    cmd: python scripts/read_tiger.py outputs/tigerline_compiled.shp -v
+    outs:
+    - outputs/tigerline_compiled.shp
+  census_pull:
+    cmd: python scripts/census_pull.py outputs/tigerline_compiled.shp outputs/airbnb.geojson
+      outputs/final_df.csv -v
+    deps:
+    - outputs/airbnb.geojson
+    - outputs/tigerline_compiled.shp
+    outs:
+    - outputs/final_df.csv

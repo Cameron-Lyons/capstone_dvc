@@ -76,4 +76,6 @@ if __name__ == '__main__':
         print('Loading TIGER/Line data...')
 
     r_df = get_tiger_line()
+    if VERBOSE:
+        print('Outputting data, please be patient...')
     r_df.to_file(args.output_tiger_file)

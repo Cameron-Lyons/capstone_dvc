@@ -52,7 +52,7 @@ if __name__ == '__main__':
     """
 
     import argparse
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'output_airbnb_file', help='Output Airbnb file (GeoJSON)')
@@ -71,4 +71,6 @@ if __name__ == '__main__':
 
     r_df = get_airbnb_data()
 
+    if VERBOSE:
+        print('Outputting data, please be patient...')
     r_df.to_file(filename=args.output_airbnb_file, driver='GeoJSON')

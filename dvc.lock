@@ -1,0 +1,31 @@
+schema: '2.0'
+stages:
+  read_airbnb:
+    cmd: python scripts/read_airbnb.py outputs/airbnb.geojson -v
+    outs:
+    - path: outputs/airbnb.geojson
+      md5: a9f16484c6a2f6f2c14db569547eec19
+      size: 929589123
+      isexec: true
+  read_tigerline:
+    cmd: python scripts/read_tiger.py outputs/tigerline_compiled.shp -v
+    outs:
+    - path: outputs/tigerline_compiled.shp
+      md5: a6924843daec2866a6d9b11f70d79c99
+      size: 821139272
+      isexec: true
+  census_pull:
+    cmd: python scripts/census_pull.py outputs/tigerline_compiled.shp outputs/airbnb.geojson
+      outputs/final_df.csv -v
+    deps:
+    - path: outputs/airbnb.geojson
+      md5: a9f16484c6a2f6f2c14db569547eec19
+      size: 929589123
+    - path: outputs/tigerline_compiled.shp
+      md5: a6924843daec2866a6d9b11f70d79c99
+      size: 821139272
+    outs:
+    - path: outputs/final_df.csv
+      md5: 90c4a428e14f29aa358d75272310a839
+      size: 661185349
+      isexec: true
