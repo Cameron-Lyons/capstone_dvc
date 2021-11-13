@@ -9,6 +9,8 @@ import requests
 import pandas as pd
 import numpy as np
 import geopandas as gpd
+from os.path import exists
+import os
 
 VERBOSE = False
 
@@ -69,6 +71,8 @@ if __name__ == '__main__':
     if VERBOSE:
         print('Loading Airbnb data...')
 
+    if not exists('outputs/'):
+        os.mkdir('outputs/')
     r_df = get_airbnb_data()
 
     if VERBOSE:
