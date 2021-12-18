@@ -43,14 +43,14 @@ transform = transforms.Compose(
 batch_size = 4
 
 trainset = abb_dataset(csv_file='data/faces/face_landmarks.csv',
-                        root='./outputs', train=True,
+                        root_dir='./outputs', train=True,
                         download=True, transform=transform)
 
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True, num_workers=2)
 
 testset = abb_dataset(csv_file='data/faces/face_landmarks.csv',
-                    root='./outputs', train=False,
+                    root_dir='./outputs', train=False,
                     download=True, transform=transform)
 
 testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
