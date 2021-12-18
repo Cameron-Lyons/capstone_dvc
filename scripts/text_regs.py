@@ -34,7 +34,7 @@ print('Trained neigh regressor')
 
 host_vec = host_tfidf.fit_transform(X_train['host_about'].replace(np.nan, ' '))
 print('Transformed train host')
-host_vec_test = host_tfidf.transform(X_test['host_about'].replace(np.nan, ' '))
+host_vec_test = host_tfidf.transform(X_dev['host_about'].replace(np.nan, ' '))
 print('Transformed test host')
 host_reg = LGBMRegressor(random_state=0).fit(host_vec, y_train)
 X_train['host_pred'] = host_reg.predict(host_vec)
