@@ -1,14 +1,7 @@
-import gzip
-import os
-
-import urllib.request
-from io import BytesIO
-from tqdm import tqdm
 import requests
-
 import pandas as pd
-import numpy as np
 import geopandas as gpd
+from tqdm import tqdm
 
 VERBOSE = False
 API_KEY = '80bf22e058fc4f1f34f51638c75678386a48a393'
@@ -181,6 +174,7 @@ if __name__ == '__main__':
     if VERBOSE:
         print('Generating final file...')
     r_df = generate_final(combined_df,df_2010,df_2020)
+    r_df = r_df[r_df["id"] != "within an hour"]
     if VERBOSE:
         print('Outputting data, please be patient...')
-    r_df.to_csv(args.output_final_file)
+    r_df.to_csv(args.output_final_file, index=False)

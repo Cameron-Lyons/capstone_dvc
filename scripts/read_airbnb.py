@@ -4,10 +4,8 @@ import os
 import urllib.request
 from io import BytesIO
 from tqdm import tqdm
-import requests
 
 import pandas as pd
-import numpy as np
 import geopandas as gpd
 from os.path import exists
 import os
