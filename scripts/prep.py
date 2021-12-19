@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
+import requests
+import shutil
 
 if __name__ == '__main__':
     """
@@ -50,3 +51,10 @@ if __name__ == '__main__':
     y_train.to_csv("../outputs/y_train.csv", index=False)
     y_dev.to_csv("../outputs/y_dev.csv", index=False)
     y_test.to_csv("../outputs/y_test.csv", index=False)
+
+    for i, image_url in X_train["picture_url"].iteritems():
+        r = requests.get(image_url, stream=True)
+        if r.status_code == 200:
+            with open('./outputs/images/' + i, 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)

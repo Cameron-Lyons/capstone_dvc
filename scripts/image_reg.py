@@ -2,61 +2,25 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
+import torchvision
 import os
 import io
 import numpy as np
 import pandas as pd
 
-class abb_dataset(Dataset):
-    def __init__(self, csv_file, root_dir, transform=None):
-        self.landmarks_frame = pd.read_csv(csv_file)
-        self.root_dir = root_dir
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.landmarks_frame)
-
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-
-        img_name = os.path.join(self.root_dir,
-                                self.landmarks_frame.iloc[idx, 0])
-        image = io.imread(img_name)
-        landmarks = self.landmarks_frame.iloc[idx, 1:]
-        landmarks = np.array([landmarks])
-        landmarks = landmarks.astype('float').reshape(-1, 2)
-        sample = {'image': image, 'landmarks': landmarks}
-
-        if self.transform:
-            sample = self.transform(sample)
-
-        return sample
-
-
 transform = transforms.Compose(
-    [transforms.ToTensor(),
+    [transforms.Resize(256),
+     transforms.CenterCrop(256),
+     transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    
+train_data = torchvision.datasets.ImageFolder(root='./outputs/images/train', transform=transform)
+dev_data = torchvision.datasets.ImageFolder(root='./outputs/images/dev', transform=transform)
 
-batch_size = 4
-
-trainset = abb_dataset(csv_file='data/faces/face_landmarks.csv',
-                        root_dir='./outputs', train=True,
-                        download=True, transform=transform)
-
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True, num_workers=2)
-
-testset = abb_dataset(csv_file='data/faces/face_landmarks.csv',
-                    root_dir='./outputs', train=False,
-                    download=True, transform=transform)
-
-testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                         shuffle=False, num_workers=2)
-
-
+train_data_loader = DataLoader(train_data, batch_size=4, shuffle=True,  num_workers=4)
+dev_data_loader = DataLoader(dev_data, batch_size=4, shuffle=True,  num_workers=4)
 
 class Net(nn.Module):
     def __init__(self):
@@ -85,7 +49,7 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 for epoch in range(2):
 
     running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
+    for i, data in enumerate(train_data_loader, 0):
         inputs, labels = data
 
         optimizer.zero_grad()
@@ -103,6 +67,4 @@ for epoch in range(2):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../models/cnn')
-
-
+torch.save(net.state_dict(), './models/cnn')
