@@ -55,6 +55,6 @@ if __name__ == '__main__':
     for i, image_url in X_train["picture_url"].iteritems():
         r = requests.get(image_url, stream=True)
         if r.status_code == 200:
-            with open('./outputs/images/' + i, 'wb') as f:
+            with open('../outputs/images/' + i, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
