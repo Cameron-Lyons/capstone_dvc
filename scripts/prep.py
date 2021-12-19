@@ -17,8 +17,13 @@ if __name__ == '__main__':
 
     df = df.dropna(subset=['price','first_review','last_review','host_since'])
 
-    df_head = df.head(20)
-    df_head.to_csv('../outputs/example_df.csv')
+    data_2020 = [col for col in df.columns if '_0' in col]
+    data_2019 = [col for col in df.columns if 'P00' in col or 'H00' in col]
+
+    for col2020, col2019 in zip(data_2020, data_2019):
+        df["delta_" + "col2020"] = df[col2020] - df[col2019]
+        df["delta_" + "col2020"] = df[col2020] - df[col2019]
+
 
     X = df.drop(['price', 'id', 'listing_url', 'scrape_id',
                 'last_scraped',
