@@ -14,11 +14,11 @@ if __name__ == '__main__':
     neigh_tfidf = TfidfVectorizer(stop_words='english')
     host_tfidf = TfidfVectorizer(stop_words='english')
 
-    X_train = pd.read_csv("./outputs/X_train.csv")
-    X_dev = pd.read_csv("./outputs/X_dev.csv")
+    X_train = pd.read_csv("../outputs/X_train.csv")
+    X_dev = pd.read_csv("../outputs/X_dev.csv")
 
-    y_train = pd.read_csv("./outputs/y_train.csv")
-    y_dev = pd.read_csv("./outputs/y_dev.csv")
+    y_train = pd.read_csv("../outputs/y_train.csv")
+    y_dev = pd.read_csv("../outputs/y_dev.csv")
 
     desc_vec = desc_tfidf.fit_transform(X_train['description'].replace(np.nan, ' '))
     print('Transformed train description')
@@ -47,6 +47,6 @@ if __name__ == '__main__':
     X_dev['host_pred'] = host_reg.predict(host_vec_test)
     print('Trained host regressor')
 
-    dump(desc_reg, './models/desc_reg.joblib')
-    dump(neigh_reg, './models/neigh_reg.joblib')
-    dump(host_reg, './models/host_reg.joblib')
+    dump(desc_reg, '../models/desc_reg.joblib')
+    dump(neigh_reg, '../models/neigh_reg.joblib')
+    dump(host_reg, '../models/host_reg.joblib')

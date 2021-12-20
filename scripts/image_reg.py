@@ -10,17 +10,6 @@ import io
 import numpy as np
 import pandas as pd
 
-transform = transforms.Compose(
-    [transforms.Resize(256),
-     transforms.CenterCrop(256),
-     transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    
-train_data = torchvision.datasets.ImageFolder(root='./outputs/images/train', transform=transform)
-dev_data = torchvision.datasets.ImageFolder(root='./outputs/images/dev', transform=transform)
-train_data_loader = DataLoader(train_data, batch_size=4, shuffle=True,  num_workers=4)
-dev_data_loader = DataLoader(dev_data, batch_size=4, shuffle=True,  num_workers=4)
-
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
@@ -40,30 +29,48 @@ class Net(nn.Module):
         x = self.fc3(x)
         return x
 
-net = Net()
+if __name__ == '__main__':
+    """
+    Build CNN model for image classification
+    """
 
-criterion = nn.MSELoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    transform = transforms.Compose(
+        [transforms.Resize(256),
+        transforms.CenterCrop(256),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        
+    train_data = torchvision.datasets.ImageFolder(root='../outputs/images/train', transform=transform)
+    dev_data = torchvision.datasets.ImageFolder(root='../outputs/images/dev', transform=transform)
+    train_data_loader = DataLoader(train_data, batch_size=4, shuffle=True,  num_workers=4)
+    dev_data_loader = DataLoader(dev_data, batch_size=4, shuffle=True,  num_workers=4)
 
-for epoch in range(2):
+    
 
-    running_loss = 0.0
-    for i, data in enumerate(train_data_loader, 0):
-        inputs, labels = data
+    net = Net()
 
-        optimizer.zero_grad()
+    criterion = nn.MSELoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-        outputs = net(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+    for epoch in range(2):
 
-        running_loss += loss.item()
-        if i % 20 == 19:
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 20))
-            running_loss = 0.0
+        running_loss = 0.0
+        for i, data in enumerate(train_data_loader, 0):
+            inputs, labels = data
 
-print('Finished Training')
+            optimizer.zero_grad()
 
-torch.save(net.state_dict(), './models/cnn')
+            outputs = net(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            if i % 20 == 19:
+                print('[%d, %5d] loss: %.3f' %
+                    (epoch + 1, i + 1, running_loss / 20))
+                running_loss = 0.0
+
+    print('Finished Training')
+
+    torch.save(net.state_dict(), '../models/cnn')
