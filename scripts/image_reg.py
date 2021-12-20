@@ -16,9 +16,8 @@ transform = transforms.Compose(
      transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     
-train_data = torchvision.datasets.ImageFolder(root='../outputs/images/train', transform=transform)
-dev_data = torchvision.datasets.ImageFolder(root='../outputs/images/dev', transform=transform)
-
+train_data = torchvision.datasets.ImageFolder(root='./outputs/images/train', transform=transform)
+dev_data = torchvision.datasets.ImageFolder(root='./outputs/images/dev', transform=transform)
 train_data_loader = DataLoader(train_data, batch_size=4, shuffle=True,  num_workers=4)
 dev_data_loader = DataLoader(dev_data, batch_size=4, shuffle=True,  num_workers=4)
 
@@ -67,4 +66,4 @@ for epoch in range(2):
 
 print('Finished Training')
 
-torch.save(net.state_dict(), '../models/cnn')
+torch.save(net.state_dict(), './models/cnn')
