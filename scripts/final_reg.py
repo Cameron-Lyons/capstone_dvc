@@ -13,9 +13,9 @@ desc_tfidf = TfidfVectorizer(stop_words='english')
 neigh_tfidf = TfidfVectorizer(stop_words='english')
 host_tfidf = TfidfVectorizer(stop_words='english')
 
-desc_reg = load('models/desc_reg.joblib')
-neigh_reg = load('models/neigh_reg.joblib')
-host_reg = load('models/host_reg.joblib')
+desc_reg = load('./models/desc_reg.joblib')
+neigh_reg = load('./models/neigh_reg.joblib')
+host_reg = load('./models/host_reg.joblib')
 
 net = Net()
 net.load_state_dict(torch.load('./models/cnn'))
@@ -24,11 +24,18 @@ transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-X_dev = pd.read_csv('outputs/X_dev.csv')
-y_dev = pd.read_csv('outputs/y_dev.csv')
+X_dev = pd.read_csv('./outputs/X_dev.csv')
+y_dev = pd.read_csv('./outputs/y_dev.csv')
 
-X_test = pd.read_csv('outputs/X_test.csv')
-y_test = pd.read_csv('outputs/y_test.csv')
+X_test = pd.read_csv('./outputs/X_test.csv')
+y_test = pd.read_csv('./outputs/y_test.csv')
+
+data_2020 = [col for col in X_dev.columns if '_0' in col]
+data_2019 = [col for col in X_dev.columns if 'P00' in col or 'H00' in col]
+
+for col2020, col2019 in zip(data_2020, data_2019):
+    X_dev["delta_" + "col2020"] = X_dev[col2020] - X_dev[col2019]
+    X_test["delta_" + "col2020"] = X_test[col2020] - X_test[col2019]
 
 devset = abb_dataset(csv_file='./outputs/pics_dev.csv',
                     root='./outputs', train=False,
@@ -76,7 +83,21 @@ enc = OneHotEncoder(handle_unknown='ignore')
 X_dev = enc.fit_transform(X_dev)
 X_test = enc.transform(X_test)
 
-reg = LGBMRegressor(random_state=0)
-reg.fit(X_dev, y_dev)
+reg_all = LGBMRegressor(random_state=0)
+reg_all.fit(X_dev, y_dev)
 print('Trained final model')
-dump(reg, 'models/final_reg.joblib')
+dump(reg_all, './models/final_reg_all.joblib')
+
+X_delta = X_dev.drop(columns=data_2019)
+X_delta = X_delta.drop(columns=data_2020)
+reg_delta = LGBMRegressor(random_state=0)
+reg_delta.fit(X_delta, y_dev)
+print('Trained delta model')
+dump(reg_delta, './models/final_reg_no_2019.joblib')
+
+X_2020 = X_dev.drop(columns=data_2019)
+X_2020 = X_delta.drop(columns=[col for col in X_dev.columns if "delta_" in col])
+reg_delta = LGBMRegressor(random_state=0)
+reg_delta.fit(X_2020, y_dev)
+print('Trained delta model')
+dump(reg_delta, './models/final_2020.joblib')
